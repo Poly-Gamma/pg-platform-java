@@ -27,8 +27,14 @@ To publish to local maven repository, invoke the `publishToMavenLocal` task:
 
 ### Java 9+
 
-Including in Java 9 or above, where JPMS is being used, `module-info.java` must contain
-`requires org.polygamma.platform`.
+Including in Java 9 or above, where JPMS is being used, `module-info.java` must require
+`org.polygamma.platform`:
+
+```java
+module myproject {
+    requires org.polygamma.platform;
+}
+```
 
 ### Maven
 
