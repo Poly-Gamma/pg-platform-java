@@ -9,6 +9,20 @@ with defining common platform details, the platform JVM is executing on is also 
 
 Apache License, Version 2.0
 
+## Building
+
+To build the JAR files, invoke the `jar` task:
+
+```
+./gradlew jar
+```
+
+To publish to local maven repository, invoke the `publishToMavenLocal` task:
+
+```
+./gradlew publishToMavenLocal
+```
+
 ## Dependency
 
 ### Java 9+
