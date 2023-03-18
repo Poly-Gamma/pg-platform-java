@@ -3,11 +3,13 @@
 plugins {
     id('java-library')
 	id('maven-publish')
+	id('signing')
 	alias(libs.plugins.checker)
+	alias(libs.plugins.nexus.publish)
 }
 
 group = 'org.poly-gamma'
-version = '1.0.0'
+version = '1.0.0-SNAPSHOT'
 
 repositories {
 	mavenLocal()
@@ -127,13 +129,21 @@ publishing {
 
 			pom {
 				name = 'Poly-Gamma Platform API'
-				description = 'Access platform details, such as operating system and architecture, in Java'
+				description = 'Access platform details, such as operating system and architecture, in Java.'
 				url = "https://poly-gamma.org/java/${project.name}"
 
 				licenses {
 					license {
 						name = 'Apache-2.0'
 						url = 'https://apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+
+				developers {
+					developer {
+						id = 'amiftah'
+						name = 'Aaloan Miftah'
+						email = 'al@poly-gamma.com'
 					}
 				}
 
@@ -144,4 +154,19 @@ publishing {
 			}
 		}
 	}
+}
+
+nexusPublishing {
+	repositories {
+		sonatype {
+			nexusUrl = uri('https://s01.oss.sonatype.org/service/local/')
+			snapshotRepositoryUrl = uri('https://s01.oss.sonatype.org/content/repositories/snapshots/')
+			username = project.property('ossrhUsername')
+			password = project.property('ossrhPassword')
+		}
+	}
+}
+
+signing {
+	sign(publishing.publications.mavenJava)
 }
