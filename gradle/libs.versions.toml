@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+
+[versions]
+junit = { require = "[5.8.0, 5.11[", prefer = "5.9+" }
+checker = { require = "[3.26.0, 3.34.0[", prefer = "3.32.0" }
+checker-plugin = { require = "[0.6.20, 0.6.30[", prefer = "0.6.25" }
+
+[libraries]
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+checker-qual = { module = "org.checkerframework:checker-qual", version.ref = "checker" }
+checker = { module = "org.checkerframework:checker", version.ref = "checker" }
+
+[plugins]
+checker = { id = 'org.checkerframework', version.ref = 'checker-plugin' }

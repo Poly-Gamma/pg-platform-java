@@ -1,0 +1,145 @@
+// SPDX-License-Identifier: Apache-2.0
+
+plugins {
+    id('java-library')
+	id('maven-publish')
+	alias(libs.plugins.checker)
+}
+
+group = 'org.poly-gamma'
+version = '1.0.0'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compileOnly(libs.checker.qual)
+	compileOnly(libs.checker)
+	checkerFramework(libs.checker)
+
+	testImplementation(libs.junit.api)
+	testImplementation(libs.junit.params)
+	testRuntimeOnly(libs.junit.engine)
+	testCompileOnly(libs.checker.qual)
+}
+
+test {
+	useJUnitPlatform()
+}
+
+java {
+	withSourcesJar()
+	withJavadocJar()
+}
+
+compileJava {
+	options.encoding = 'utf-8'
+	options.release = 17
+	options.javaModuleVersion = project.version
+
+	options.compilerArgs += [
+		/*
+		 * Enable all warnings and treat warnings as errors.
+		 */
+		'-Xlint:all', '-Werror', '-Xmaxerrs', '1',
+
+		/*
+		 * Implicitly generate classes to avoid implicit warnings.
+		 */
+		'-implicit:class',
+
+		/*
+		 * Disable warnings for using automatic modules with static/transitive qualifiers.
+		 */
+		'-Xlint:-requires-automatic', '-Xlint:-exports'
+	]
+}
+
+javadoc {
+	/*
+	 * We use snippet tags, which requires a Java 18+ toolchain.
+	 */
+	javadocTool.set(javaToolchains.javadocToolFor {
+		languageVersion = JavaLanguageVersion.of(19)
+	})
+	options.encoding = 'utf-8'
+	options.memberLevel = JavadocMemberLevel.PROTECTED
+	title = "${project.name} - ${project.version}"
+	options.addStringOption('-show-packages', 'exported')
+	options.addBooleanOption('Xdoclint:all', true)
+	options.addBooleanOption('Werror', true)
+	options.links('https://docs.oracle.com/en/java/javase/17/docs/api/')
+	options.linksOffline(
+		'https://checkerframework.org/api/',
+		layout.projectDirectory.dir('javadoc-links').dir('org.checkerframework').asFile.path)
+}
+
+jar {
+	manifest.attributes(
+		'Sealed': 'true',
+		'Implementation-Title': project.name,
+		'Implementation-Version': project.version)
+}
+
+checkerFramework {
+	checkers = [
+	    'org.checkerframework.checker.formatter.FormatterChecker',
+		'org.checkerframework.checker.nullness.NullnessChecker'
+	]
+
+	extraJavacArgs = [
+		/*
+		 * Don't warn about explicit casts as unsafe, and conditional results.
+		 */
+		'-AsuppressWarnings=cast.unsafe,conditional',
+		/*
+		 * Some checker annotations go unclaimed, avoid warning on those.
+		 */
+		'-Xlint:-processing',
+		/*
+		 * Make sure only required suppressions are included.
+		 */
+		'-AwarnUnneededSuppressions'
+	]
+
+	/*
+	 * Checker can't process record types well yet for some reason. Re-enable when it's fixed.
+	 */
+	skipCheckerFramework = true
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifactId = project.name
+			from components.java
+
+			versionMapping {
+				usage('java-api') {
+					fromResolutionOf('runtimeClasspath')
+				}
+				usage('java-runtime') {
+					fromResolutionResult()
+				}
+			}
+
+			pom {
+				url = "https://poly-gamma.org/java/${project.name}"
+
+				licenses {
+					license {
+						name = 'Apache-2.0'
+						url = 'https://apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+
+				scm {
+					connection = 'scm:git:git:git@github.com:Poly-Gamma/pg-platform-java'
+					url = "https://poly-gamma.org/java/${project.name}"
+				}
+			}
+		}
+	}
+}
