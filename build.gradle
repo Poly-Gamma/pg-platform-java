@@ -70,6 +70,7 @@ javadoc {
 	options.addStringOption('-show-packages', 'exported')
 	options.addBooleanOption('Xdoclint:all', true)
 	options.addBooleanOption('Werror', true)
+	options.addBooleanOption('html5', true)
 	options.links('https://docs.oracle.com/en/java/javase/17/docs/api/')
 	options.linksOffline(
 		'https://checkerframework.org/api/',
@@ -113,7 +114,6 @@ checkerFramework {
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			artifactId = project.name
 			from components.java
 
 			versionMapping {
@@ -126,6 +126,8 @@ publishing {
 			}
 
 			pom {
+				name = 'Poly-Gamma Platform API'
+				description = 'Access platform details, such as operating system and architecture, in Java'
 				url = "https://poly-gamma.org/java/${project.name}"
 
 				licenses {
